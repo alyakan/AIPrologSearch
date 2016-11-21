@@ -4,9 +4,18 @@
 North, South, East, West.
 0001, 0010, 0100, 1000.
 */
+
 /*
-legal(S), endPoint(X, Y), agent(X, Y, _, S).
+    legal(S), endPoint(X, Y), agent(X, Y, _, S).
 */
+
+/*
+    $ iterative_deepening((legal(S), agent(2, 3, 0, S)),50,R).
+    $ call_with_depth_limit((legal(S), agent(2, 3, 0, S)),50,R).
+S = result(moveEast, result(moveEast, result(moveSouth, result(moveWest, result(moveSouth, result(moveEast, result(moveSouth, result(moveWest, result(moveWest, result(moveEast, result(moveWest, result(moveEast, result(moveWest, result(moveEast, result(moveWest, s0))))))))))))))),
+R = 34
+*/
+
 /* Preconditions for actions */
 position(moveNorth, S):-
     agent(X, Y, Timer, S),
@@ -77,11 +86,16 @@ agent(C, B, T, result(A,S)):-
 legal(s0).
 legal(result(A, S)):- legal(S), position(A,S).
 
-iter_deepening(Goal, Limit, Result):-
+iterative_deepening(Goal, Limit, Result):-
     call_with_depth_limit(Goal,Limit,Result),
-    Result \= depth_limit_exceeded;
-    Limit1 is Limit + 1,
-    iter_deepening(Goal, Limit1, Result).
+    Result \= depth_limit_exceeded.
+
+iterative_deepening(Goal,Limit,Result):-
+    call_with_depth_limit(Goal,Limit,Result),
+    Result == depth_limit_exceeded,
+    Limit2 is Limit + 1,
+    writeln(Limit2),
+    iterative_deepening(Goal,Limit2,R2).
 
 
 main.
