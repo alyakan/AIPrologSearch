@@ -4,7 +4,9 @@
 North, South, East, West.
 0001, 0010, 0100, 1000.
 */
-
+/*
+legal(S), endPoint(X, Y), agent(X, Y, _, S).
+*/
 /* Preconditions for actions */
 position(moveNorth, S):-
     agent(X, Y, Timer, S),
@@ -51,8 +53,13 @@ agent(X, Y, Timer, s0):-
 /* Successor-state axioms for fluents */
 
 agent(C, B, T, result(A,S)):- 
-    agent(W, Z, T, S),
+    agent(W, Z, T1, S),
     (
+        T1 > 0 -> T is T1 - 1 ; T is 0, writeln('T1 = 0')
+        %% T is T1 - 1
+    ),
+    (
+        %% ((T is T1 - 1, T > 0); T is T1; T1 is 0),
         (A=moveNorth, B is Z-1, C is W);
         (A=moveSouth, B is Z+1, C is W);
         (A=moveEast, C is W+1, B is Z);
@@ -69,6 +76,12 @@ agent(C, B, T, result(A,S)):-
 /* legal Axioms */
 legal(s0).
 legal(result(A, S)):- legal(S), position(A,S).
+
+iter_deepening(Goal, Limit, Result):-
+    call_with_depth_limit(Goal,Limit,Result),
+    Result \= depth_limit_exceeded;
+    Limit1 is Limit + 1,
+    iter_deepening(Goal, Limit1, Result).
 
 
 main.
